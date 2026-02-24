@@ -26,6 +26,7 @@ A minimal TUI Pomodoro timer built with Go and Bubbletea.
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
+- [Notes](#notes)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -131,6 +132,11 @@ gomodoro
 | `Enter`             | Start timer                   |
 | `Space`             | Pause/Resume timer            |
 | `q`                 | Quit                          |
+
+## Notes
+
+- **macOS**: Desktop notifications display the Script Editor icon instead of the terminal app icon. This is a limitation
+  of how notifications are sent via AppleScript.
 
 ## Contributing
 
