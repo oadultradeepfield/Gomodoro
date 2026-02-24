@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Add your logo here -->
-<!-- <img src="assets/logo.png" alt="Gomodoro Logo" width="200"> -->
+<img src="assets/logo.png" alt="Gomodoro Logo" width="85">
 
 # Gomodoro
 
@@ -34,7 +34,7 @@ A minimal TUI Pomodoro timer built with Go and Bubbletea.
 ## About
 
 <!-- Add a screenshot here -->
-<!-- ![Screenshot](assets/screenshot.png) -->
+![Screenshot](assets/screenshot.png)
 
 Gomodoro is a terminal-based Pomodoro timer. It runs entirely in your terminal with a clean, distraction-free interface.
 
