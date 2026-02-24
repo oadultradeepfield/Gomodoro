@@ -58,7 +58,7 @@ Gomodoro is a terminal-based Pomodoro timer. It runs entirely in your terminal w
 
 ### Prerequisites
 
-- Go 1.25 or higher (for building from source)
+Go 1.25 or higher (for building from source)
 
 ### Installation
 
@@ -144,5 +144,5 @@ Contributions are welcome. Feel free to open an issue or submit a pull request.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
