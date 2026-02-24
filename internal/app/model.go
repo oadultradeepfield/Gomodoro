@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -15,10 +16,21 @@ import (
 func New() Model {
 	inputs := make([]textinput.Model, 3)
 
+	// Validator that only allows digits
+	digitValidator := func(s string) error {
+		for _, r := range s {
+			if !unicode.IsDigit(r) {
+				return fmt.Errorf("only digits allowed")
+			}
+		}
+		return nil
+	}
+
 	for i := range inputs {
 		t := textinput.New()
 		t.CharLimit = 2
 		t.Width = 4
+		t.Validate = digitValidator
 		inputs[i] = t
 	}
 
@@ -54,7 +66,14 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		return m.handleKeyPress(msg)
+		newModel, cmd, consumed := m.handleKeyPress(msg)
+		if consumed {
+			return newModel, cmd
+		}
+		if m.phase == PhaseSetup {
+			return m.updateInputs(msg)
+		}
+		return m, nil
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
@@ -76,27 +95,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Model) handleKeyPress(msg tea.KeyMsg) (Model, tea.Cmd, bool) {
 	switch msg.String() {
 	case "q", "ctrl+c":
-		return m, tea.Quit
+		return m, tea.Quit, true
 	case "enter":
 		if m.phase == PhaseSetup {
-			return m.startTimer()
+			newModel, cmd := m.startTimer()
+			return newModel.(Model), cmd, true
 		}
 	case " ":
 		if m.phase != PhaseSetup {
 			m.paused = !m.paused
 			if !m.paused {
-				return m, tea.Batch(tickCmd(), m.spinner.Tick)
+				return m, tea.Batch(tickCmd(), m.spinner.Tick), true
 			}
+			return m, nil, true
 		}
 	case "tab", "shift+tab":
 		if m.phase == PhaseSetup {
-			return m.cycleFocus(msg.String() == "shift+tab")
+			newModel, cmd := m.cycleFocus(msg.String() == "shift+tab")
+			return newModel.(Model), cmd, true
 		}
 	}
-	return m, nil
+	// Key not consumed - allow it to pass through to text inputs
+	return m, nil, false
 }
 
 func (m Model) cycleFocus(reverse bool) (tea.Model, tea.Cmd) {
@@ -148,8 +171,8 @@ func (m Model) parseDuration(value string, defaultVal int) time.Duration {
 	if _, err := fmt.Sscanf(value, "%d", &minutes); err != nil || minutes <= 0 {
 		minutes = defaultVal
 	}
-	if minutes > 99 {
-		minutes = 99
+	if minutes > 60 {
+		minutes = 60
 	}
 	return time.Duration(minutes) * time.Minute
 }
